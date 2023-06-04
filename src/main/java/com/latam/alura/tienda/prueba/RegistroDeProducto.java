@@ -1,26 +1,39 @@
 package com.latam.alura.tienda.prueba;
 
+import com.latam.alura.tienda.dao.CategoriaDAO;
+import com.latam.alura.tienda.dao.ProductoDAO;
+import com.latam.alura.tienda.modelo.Categoria;
 import com.latam.alura.tienda.modelo.Producto;
+import com.latam.alura.tienda.utils.JPAUtils;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.math.BigDecimal;
 
 public class RegistroDeProducto {
     public static void main(String[] args) {
 
-        Producto celular = new Producto();
-        celular.setNombre("Xiaomi Redmi");
-        celular.setDescripcion("Producto usado");
-        celular.setPrecio(new BigDecimal("800"));
+        Categoria celulares = new Categoria("CELULARES");
 
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("tienda");
-
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = JPAUtils.getEntityManager();
         em.getTransaction().begin();
-        em.persist(celular);
-        em.getTransaction().commit();
-        em.close();
+
+        em.persist(celulares);
+
+        celulares.setNombre("LIBROS");
+
+        em.flush();
+        em.clear();
+
+
+        celulares = em.merge(celulares);
+        celulares.setNombre("SOFTWARES");
+
+        em.flush();
+        em.clear();
+
+        celulares = em.merge(celulares);
+        em.remove(celulares);
+        em.flush();
+
     }
 }
