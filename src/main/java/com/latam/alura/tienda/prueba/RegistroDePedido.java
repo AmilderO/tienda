@@ -1,30 +1,47 @@
 package com.latam.alura.tienda.prueba;
 
 import com.latam.alura.tienda.dao.CategoriaDAO;
+import com.latam.alura.tienda.dao.ClienteDAO;
+import com.latam.alura.tienda.dao.PedidoDAO;
 import com.latam.alura.tienda.dao.ProductoDAO;
-import com.latam.alura.tienda.modelo.Categoria;
-import com.latam.alura.tienda.modelo.CategoriaId;
-import com.latam.alura.tienda.modelo.Producto;
+import com.latam.alura.tienda.modelo.*;
 import com.latam.alura.tienda.utils.JPAUtils;
+import com.latam.alura.tienda.vo.RelatorioDeVenta;
 
 import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class RegistroDeProducto {
+public class RegistroDePedido {
     public static void main(String[] args) {
         registrarProducto();
+
         EntityManager em = JPAUtils.getEntityManager();
         ProductoDAO productoDAO = new ProductoDAO(em);
+        PedidoDAO pedidoDAO = new PedidoDAO(em);
+        ClienteDAO clienteDAO = new ClienteDAO(em);
+
         Producto producto = productoDAO.consultaPorId(1l);
-        System.out.println(producto.getNombre());
 
-        BigDecimal precio = productoDAO.consultarPrecioPorNombreDeProducto("Xiaomi Redmi");
-        System.out.println(precio);
+        Cliente cliente = new Cliente("Amilder", "10235");
+        Pedido pedido = new Pedido(cliente);
+        pedido.agregarItems(new ItemsPedido(5, producto, pedido));
 
-        Categoria find = em.find(Categoria.class, new CategoriaId("CELULARES", "1234"));
+        em.getTransaction().begin();
 
-        System.out.println(find.getNombre());
+        clienteDAO.guardar(cliente);
+        pedidoDAO.guardar(pedido);
+
+        em.getTransaction().commit();
+
+        BigDecimal valorTotal = pedidoDAO.valorTotalVendido();
+        System.out.println("Valor Total" + valorTotal);
+
+        List<RelatorioDeVenta> relatorio = pedidoDAO.relatorioDeVentasVO();
+
+        relatorio.forEach(System.out::println);
+
+
     }
 
     private static void registrarProducto() {

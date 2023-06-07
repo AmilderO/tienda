@@ -6,7 +6,8 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name="productos")
-
+@NamedQuery(name = "Producto.consultaDePrecio", query="SELECT P.precio FROM Producto AS P WHERE P.nombre =: nombre")
+@Inheritance(strategy=InheritanceType.JOINED)
 public class Producto{
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -16,7 +17,7 @@ public class Producto{
     private String descripcion;
     private BigDecimal precio;
     private LocalDate fechaDeRegistro = LocalDate.now();
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Categoria categoria;
 
 

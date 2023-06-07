@@ -11,13 +11,11 @@ public class Cliente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nombre;
-    private String dni;
-
+    @Embedded
+    private DatosPersonales datosPersonales;
 
     public Cliente(String nombre, String dni){
-        this.dni = dni;
-        this.nombre = nombre;
+        this.datosPersonales = new DatosPersonales(nombre, dni);
     }
 
     public Cliente() {}
@@ -27,12 +25,16 @@ public class Cliente {
         return id;
     }
     public String getNombre() {
-        return nombre;
+        return datosPersonales.getNombre();
     }
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        this.datosPersonales.setNombre(nombre);
     }
-    public String getDni() {return dni;}
-    public void setDni(String dni) {this.dni = dni;}
+    public String getDni() {
+        return datosPersonales.getDni();
+    }
+    public void setDni(String dni) {
+        this.datosPersonales.setDni(dni);
+    }
 
 }
